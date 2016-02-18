@@ -166,3 +166,19 @@ HKBPTKQnIay4Fw76bEy8PVxKEDQRKTzs
 ### Level 7 -> 8
 
 <http://overthewire.org/wargames/bandit/bandit8.html>
+
+```
+ssh bandit7@bandit.labs.overthewire.org
+```
+I think this is where they meant to introduce `grep` and as a result of us already using it we can solve this similarly to before.
+We use `cat` to print all of the lines of this file and then pipe the output to `grep` and look for the word *millionth*.
+
+```
+cat data.txt | grep millionth
+
+millionth	cvX2JJa4CFALtqS87jk27qwqGhBM9plV
+```
+
+### Level 8 -> 9
+
+<http://overthewire.org/wargames/bandit/bandit9.html>
