@@ -228,3 +228,120 @@ And only one of these looks like the correct password (from the previous formats
 ```
 ssh bandit10@bandit.labs.overthewire.org
 ```
+
+This file is encoded into base 64 and as a result we need to use `base64` to decode this into ASCI text.
+Use the option `-d` to decode
+```
+base64 -d data.txt
+
+The password is IFukwKGsFW8MOq3IRFqrxE1hxTNEbUPR
+```
+
+### Level 11 -> 12
+
+<http://overthewire.org/wargames/bandit/bandit11.html>
+
+```
+ssh bandit11@bandit.labs.overthewire.org
+```
+
+I spent a while playing with `tr` when doing this question.
+I've never used `tr` before and I can see where it would be useful in certain "find and replace" problems.
+This probably not the best solution but the basic syntax of `tr` here is one of `tr [set1] [set2] < data.txt`.
+This means replace all of the characters in set1 pairwise with the characters as defined in set2. I use this to produce the password
+
+```
+tr [a-zA-Z] [n-za-mN-ZA-M] < data.txt
+```
+
+Here `[set]` is a list of all lower case characters a-z and then all upper case characters A-Z.
+This is replaced with the same characters but translated 13 characters along so starting from n to z and then a to m.
+
+```
+The password is 5Te8Y4drgCRfCx8ugdwuEX8KFC6k2EUu
+```
+
+I feel there must be a more elegant way of doing this...
+
+### Level 12 -> 13
+
+<http://overthewire.org/wargames/bandit/bandit12.html>
+
+```
+ssh bandit12@bandit.labs.overthewire.org
+```
+
+This one took a short while!
+They definitely did compress it a few times.
+We start with `data.txt` and we want to move it and rename it to the `/tmp` folder that is suggested in the question.
+
+```
+mkdir /tmp/gordon
+cp data.txt /tmp/gordon
+cd /tmp/gordon
+mv data.txt data1.txt
+```
+
+We now have a copy of the original data.txt in a nice temporary directory. We can now see what the file looks like by using `file data1.txt` and `cat data1.txt` which outputs
+```
+data1.txt: ASCII text
+
+0000000: 1f8b 0808 34da 6554 0203 6461 7461 322e  ....4.eT..data2.
+0000010: 6269 6e00 013f 02c0 fd42 5a68 3931 4159  bin..?...BZh91AY
+0000020: 2653 5982 c194 8a00 0019 ffff dbfb adfb  &SY.............
+0000030: bbab b7d7 ffea ffcd fff7 bfbf 1feb eff9  ................
+```
+This is a hexdump (as we were told in the question) and we will use the command `xxd` to reverse this with the option `-r`.
+
+```
+xxd -r data1.txt > data2.txt
+```
+
+We can now look at `data2.txt` using `file`
+
+```
+file data2.txt
+
+dataz.txt: gzip compressed data, was "data2.bin", from Unix, last modified: Fri Nov 14 10:32:20 2014, max compression
+```
+
+So this shows us that we now have a file that is compressed using `gzip` and we'll need to uncompress this.
+There are several subsequent files that are also all compressed using different commands and for brevity I will only show the required commands (sometimes including renaming with `mv` for appropriate suffix) for this file in particular.
+
+``` bash
+mv data2.txt data2.gz
+
+gzip -d data2.gz
+
+bzip2 -d data2
+
+mv data2.out data2.out.gz
+
+gzip -d data2.out.gz
+
+tar xvf data2.tar
+
+tar xvf data5.bin
+
+bzip2 -d data6.bin
+
+tar xvf data6.bin.out
+
+mv data8.bin data8.gz
+
+gzip -d data8.gz
+
+cat data8
+
+The password is 8ZjyCRiBWFYkneahHwxCv3wb2a1ORpYL
+```
+
+Phew!
+
+### Level 13 -> 14
+
+<http://overthewire.org/wargames/bandit/bandit13.html>
+
+```
+ssh bandit13@bandit.labs.overthewire.org
+```
