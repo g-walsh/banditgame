@@ -182,3 +182,49 @@ millionth	cvX2JJa4CFALtqS87jk27qwqGhBM9plV
 ### Level 8 -> 9
 
 <http://overthewire.org/wargames/bandit/bandit9.html>
+
+```
+ssh bandit8@bandit.labs.overthewire.org
+```
+
+This one is probably not the best solution but it is the first one that I found which first involves using `sort` to order the list `data.txt` so that repeated lines are all next to each other.
+This can then be piped to `uniq` with the option `-c` which will count the number of repeated line.
+Then we just need to `sort` it again in reverse order using `-r` which will list the only line that occurs only once at the end of the sort.
+
+```
+sort data.txt | uniq -c | sort -r
+```
+
+The final line of this output shows the password as it is the only line with 1 occurence according to `uniq`.
+
+```
+1 UsvVyFSfZZWbi6wgC7dAFyFuR6jQQUhR
+```
+
+### Level 9 -> 10
+
+<http://overthewire.org/wargames/bandit/bandit10.html>
+
+```
+ssh bandit9@bandit.labs.overthewire.org
+```
+
+Using the `strings` function will output all of the human-readable strings of `data.txt` and then we just need to find those beginning with several `=` symbols using `grep`.
+
+```
+strings data.txt | grep ===
+I========== the6
+========== password
+========== ism
+========== truKLdjsbJ5g7yyJ2X2R0o3a5HQJFuLk
+```
+
+And only one of these looks like the correct password (from the previous formats).
+
+### Level 10 -> 11
+
+<http://overthewire.org/wargames/bandit/bandit10.html>
+
+```
+ssh bandit10@bandit.labs.overthewire.org
+```
