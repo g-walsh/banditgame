@@ -344,4 +344,34 @@ Phew!
 
 ```
 ssh bandit13@bandit.labs.overthewire.org
+
+exit
+```
+
+Here we are logged in as bandit13 and trying to read a file that is accessible only to bandit14 (and presumably root).
+There is a file called `sshkey.private` which we can use to log in as bandit14 and then read the text password for the next problem.
+I will use `scp` to get the key file to my local computer.
+
+```
+scp bandit13@bandit.labs.overthewire.org:/home/bandit13/sshkey.private ./
+```
+
+This will copy the ssh key to my local folder and I can then use that to log in as bandit14. (If you get a warning about an unprotected key then use `chmod 600 sshkey.private`)
+
+```
+ssh -i sshkey.private bandit14@bandit.labs.overthewire.org
+```
+From here we can read the required password
+```
+cat /etc/bandit_pass/bandit14
+
+4wcYUJFw0k0XLShlDzztnTBHiqxU3b3e
+```
+
+### Level 14 -> 15
+
+<http://overthewire.org/wargames/bandit/bandit14.html>
+
+```
+ssh bandit14@bandit.labs.overthewire.org
 ```
