@@ -223,7 +223,7 @@ And only one of these looks like the correct password (from the previous formats
 
 ### Level 10 -> 11
 
-<http://overthewire.org/wargames/bandit/bandit10.html>
+<http://overthewire.org/wargames/bandit/bandit11.html>
 
 ```
 ssh bandit10@bandit.labs.overthewire.org
@@ -239,7 +239,7 @@ The password is IFukwKGsFW8MOq3IRFqrxE1hxTNEbUPR
 
 ### Level 11 -> 12
 
-<http://overthewire.org/wargames/bandit/bandit11.html>
+<http://overthewire.org/wargames/bandit/bandit12.html>
 
 ```
 ssh bandit11@bandit.labs.overthewire.org
@@ -265,7 +265,7 @@ I feel there must be a more elegant way of doing this...
 
 ### Level 12 -> 13
 
-<http://overthewire.org/wargames/bandit/bandit12.html>
+<http://overthewire.org/wargames/bandit/bandit13.html>
 
 ```
 ssh bandit12@bandit.labs.overthewire.org
@@ -340,7 +340,7 @@ Phew!
 
 ### Level 13 -> 14
 
-<http://overthewire.org/wargames/bandit/bandit13.html>
+<http://overthewire.org/wargames/bandit/bandit14.html>
 
 ```
 ssh bandit13@bandit.labs.overthewire.org
@@ -370,8 +370,60 @@ cat /etc/bandit_pass/bandit14
 
 ### Level 14 -> 15
 
-<http://overthewire.org/wargames/bandit/bandit14.html>
+<http://overthewire.org/wargames/bandit/bandit15.html>
 
 ```
 ssh bandit14@bandit.labs.overthewire.org
+```
+
+Here we can use `telnet` to connect to `localhost 30000` and then input the previous password.
+
+```
+bandit14@melinda:~$ telnet localhost 30000
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+4wcYUJFw0k0XLShlDzztnTBHiqxU3b3e
+Correct!
+BfMYroe26WYalil77FoDi9qh59eK5xNr
+```
+
+### Level 15 -> 16
+
+<http://overthewire.org/wargames/bandit/bandit16.html>
+
+```
+ssh bandit15@bandit.labs.overthewire.org
+```
+
+This is similar to the last problem but we use an ssl handshake to authenticate and encrypt the connection.
+We can't connect to an ssl server without using this.
+We use the commands `openssl` and `s_client` to connect to `localhost:30001`
+
+```
+openssl s_client -ign_eof -connect localhost:30001
+
+...
+BfMYroe26WYalil77FoDi9qh59eK5xNr
+Correct!
+cluFn7wTiGryunymYOu4RcffSxQluehd
+...
+
+```
+
+The question suggests that we use the option `-ign_eof` with s_client, to find out why below I quote from the man page of `openssl`
+
+> S_CLIENT CONNECTED COMMANDS
+
+> If a connection is established with an SSL server, any data received from the server is displayed and any key presses will be sent to the server.
+> When used interactively (which means neither -quiet nor -ign_eof have been given), the session will be renegotiated if the line begins with an R; if the line begins with a Q or if end of file is reached, the connection will be closed down.
+
+Essentially when you are running `openssl` in an interactive mode (without using `-quiet` or `-ign_eof`) a line beginning with B,Q or R will produce unexpected results and errors because they are commands for the server.
+
+### Level 16 -> 17
+
+<http://overthewire.org/wargames/bandit/bandit17.html>
+
+```
+ssh bandit16@bandit.labs.overthewire.org
 ```
