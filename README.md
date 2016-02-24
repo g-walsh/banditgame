@@ -364,7 +364,7 @@ ssh -i sshkey.private bandit14@bandit.labs.overthewire.org
 From here we can read the required password
 ```
 cat /etc/bandit_pass/bandit14
-
+eb
 4wcYUJFw0k0XLShlDzztnTBHiqxU3b3e
 ```
 
@@ -429,8 +429,8 @@ ssh bandit16@bandit.labs.overthewire.org
 ```
 
 In this level we can use a bunch of interesting stuff!
-I started by making a directory that I could write to and then using `nmap` to scan for open ports between 31000 and 32000 on the localhost.
-Then using grep (and an expression that means the *number 3 and then 4 other numerical digits*) we can write this to a text file containing the open ports in the range of interest.
+I started by making a directory that I could write to and then using `nmap` to scan for open ports between `31000` and `32000` on the localhost.
+Then using `grep` (and an expression that means the *number 3 and then 4 other numerical digits*) we can write this to a text file containing the open ports in the range of interest.
 
 ```
 mkdir /tmp/gordon1
@@ -518,10 +518,139 @@ We can also get bandit17s plain text password from the same place as we did in a
 cat /etc/bandit_pass/bandit17
 xLYVMN9WE5zQ5vHacb0sZEVqbrp7nBTn
 ```
+
 ### Level 17 -> 18
 
 <http://overthewire.org/wargames/bandit/bandit18.html>
 
 ```
 ssh bandit17@bandit.labs.overthewire.org
+```
+
+Now we use the command `diff` to compare two files line by line.
+Here the only difference in the files will be the next password.
+
+```
+diff passwords.old passwords.new
+42c42
+< BS8bqB1kqkinKJjuxL6k072Qq9NRwQpR
+---
+> kfBf3eYk5BPBRzwjqutbbfE887SVc5Yd
+```
+
+### Level 18 -> 19
+
+<http://overthewire.org/wargames/bandit/bandit19.html>
+
+```
+ssh bandit18@bandit.labs.overthewire.org
+```
+
+When we `ssh` into this server we get booted out straight away by the `.bashrc` file.
+This file is a configuration file that is executed on logging into the terminal emulator, in this case logging in via ssh.
+Instead of logging into the server interactively we can put a command at the end of the `ssh` which will execute that command rather than log into a remote shell.
+
+```
+ssh bandit18@bandit.labs.overthewire.org cat readme
+
+IueksS7Ubh8G3DCwVzrTd8rAVOwq3M5x
+```
+
+### Level 19 -> 20
+
+<http://overthewire.org/wargames/bandit/bandit20.html>
+
+```
+ssh bandit19@bandit.labs.overthewire.org
+```
+
+This problem contains a binary executable that bandit19 has permission to use and it will execute a command as bandit20.
+The binary is called `bandit20-do` and can be executed using `./bandit20-do` to see what the syntax is.
+We can then use
+
+```
+./bandit20-do cat /etc/bandit_pass/bandit20
+
+GbKksEFF4yrVs6il55v6gwY5aVje5f0j
+```
+
+### Level 20 -> 21
+
+<http://overthewire.org/wargames/bandit/bandit21.html>
+
+```
+ssh bandit20@bandit.labs.overthewire.org
+```
+
+In this problem we want to open and listen to a local port using `nc` and the option `-l` to listen to this port.
+We also want to pass the password for this level to this port
+
+```
+cat /etc/bandit_pass/bandit20 | nc -l localhost 8040
+```
+
+`nc` is now listening on port `8040`.
+We now want to run the binary mentioned in the question that will connect to a port on localhost and then read a line of text from it.
+The binary `suconnect` will read this line of text and if it matches the password it will then send the next password back to the port that our `nc` process is listening to.
+This next command is to be run on a different ssh shell.
+
+```
+./suconnect 8040
+Read: GbKksEFF4yrVs6il55v6gwY5aVje5f0j
+Password matches, sending next password
+```
+
+Then back in the original terminal the `nc` command will terminate hopefully with
+
+```
+gE269g2h3mw3pwgrj0Ha9Uoqen1c9DGr
+```
+
+### Level 21 -> 22
+
+<http://overthewire.org/wargames/bandit/bandit22.html>
+
+```
+ssh bandit21@bandit.labs.overthewire.org
+```
+
+As they suggest we can first move to `/etc/cron.d` and then look at what is there.
+
+```
+cd /etc/cron.d
+ls
+behemoth4_cleanup  cronjob_bandit24_root  natas-stats       php5         sysstat
+cron-apt           leviathan5_cleanup     natas25_cleanup   semtex0-32   vortex0
+cronjob_bandit22   manpage3_resetpw_job   natas25_cleanup~  semtex0-64   vortex20
+cronjob_bandit23   melinda-stats          natas26_cleanup   semtex0-ppc
+cronjob_bandit24   natas-session-toucher  natas27_cleanup   semtex5
+```
+
+The interesting ones here are the ones called `cronjob_bandit*` and here we are looking for bandit22s password.
+Lets have a look at this file and then the subsequent script `cronjob_bandit22.sh`
+
+```
+cat cronjob_bandit22
+* * * * * bandit22 /usr/bin/cronjob_bandit22.sh &> /dev/null
+
+cat /usr/bin/cronjob_bandit22.sh
+#!/bin/bash
+chmod 644 /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+cat /etc/bandit_pass/bandit22 > /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+
+```
+
+Lets see if we can read the temporary file
+
+```
+cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+Yk7owGAcWjwMVRwrTesJEwB7WVOiILLI
+```
+
+### Level 22 -> 23
+
+<http://overthewire.org/wargames/bandit/bandit23.html>
+
+```
+ssh bandit22@bandit.labs.overthewire.org
 ```
