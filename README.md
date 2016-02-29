@@ -12,21 +12,24 @@ The first few answers are fairly trivial but this gets progressively harder and 
 
 <http://overthewire.org/wargames/bandit/bandit0.html>
 
-```
+```bash
 ssh bandit0@bandit.labs.overthewire.org
 ```
+
 Here we use the given password `bandit0`
 
 ### Level 0 -> 1
 
 <http://overthewire.org/wargames/bandit/bandit1.html>
 
-```
+```bash
 cat readme
 ```
+
 `cat` is a very useful function for joining files together but with only one argument it will quickly print the contents of a file to stdout (to the terminal).
 Here the password for *bandit1* is stored in plain text.
-```
+
+```bash
 boJ9jbbUNNfktd78OOpsqOltutMc3MY1
 ```
 
@@ -34,19 +37,25 @@ boJ9jbbUNNfktd78OOpsqOltutMc3MY1
 
 <http://overthewire.org/wargames/bandit/bandit2.html>
 
-```
+```bash
 ssh bandit1@bandit.labs.overthewire.org
 ```
+
 Here is something that I had to be reminded about that files named with `-`. When you use `-` in place of a filename in an argument of a function it will use STDIN or STDOUT so in this case writing
-```
+
+```bash
 cat -
 ```
+
 will not prodcue the desired effect as it will be reading STDIN, instead we want to explicitly refer to the file using
-```
+
+```bash
 cat ./-
 ```
+
 This shows us the password for *bandit2*
-```
+
+```bash
 CV1DtqXWVFXTvM2F0k09SHz0YwRINYA9
 ```
 
@@ -54,11 +63,13 @@ CV1DtqXWVFXTvM2F0k09SHz0YwRINYA9
 
 <http://overthewire.org/wargames/bandit/bandit3.html>
 
-```
+```bash
 ssh bandit2@bandit.labs.overthewire.org
 ```
+
 Here tab completion will save the day by filling in the desired `\` to mark spaces in the filename
-```
+
+```bash
 cat spaces\ in\ this\ filename
 
 UmHadQclWmgdLOKQ3YNgjWxGoRMb5luK
@@ -68,16 +79,20 @@ UmHadQclWmgdLOKQ3YNgjWxGoRMb5luK
 
 <http://overthewire.org/wargames/bandit/bandit4.html>
 
-```
+```bash
 ssh bandit3@bandit.labs.overthewire.org
 ```
+
 While `ls` will list the files in the current directiory `ls -a` will list all files including hidden ones.
-```
+
+```bash
 cd inhere
 ls -a
 ```
+
 This will expose the `.hidden` file where the password is stored. File names that begin with a `.` will be hidden by default.
-```
+
+```bash
 cat .hidden
 
 pIwrPrtPN36QITSp3EQaw936yaFoFgAB
@@ -87,16 +102,20 @@ pIwrPrtPN36QITSp3EQaw936yaFoFgAB
 
 <http://overthewire.org/wargames/bandit/bandit5.html>
 
-```
+```bash
 ssh bandit4@bandit.labs.overthewire.org
 ```
+
 This one also showed me a feature of `ls` that I didn't know which will only list human-readable files by using the option `-h`.
-```
+
+```bash
 cd inhere
 ls -ah
 ```
+
 and as these files have a `-` in them we should view the correct file using
-```
+
+```bash
 cat ./-file07
 
 koReBOKuIDDepwhWk7jZC0RTdopnAYKh
@@ -106,17 +125,20 @@ koReBOKuIDDepwhWk7jZC0RTdopnAYKh
 
 <http://overthewire.org/wargames/bandit/bandit6.html>
 
-```
+```bash
 ssh bandit5@bandit.labs.overthewire.org
 ```
 
 I spent a while looking at this one using `ls` but in the end using the fact that the file was 1033 bytes in size was the quickest way to find the file we were looking for.
 Using the command `du` (disk usage) with its defaults will show the size of the directories and subdirectories. If we use the `-a` option this will show the individual file sizes and using `-b` will display those sizes in bytes (rather than as blocks on the disk).
-```
+
+```bash
 du -ab
 ```
+
 This produces a list of files with their respective sizes
-```
+
+```bash
 ...
 2084	./inhere/maybehere18/.file2
 7040	./inhere/maybehere18/spaces file3
@@ -124,14 +146,18 @@ This produces a list of files with their respective sizes
 7334	./inhere/maybehere18/spaces file1
 ...
 ```
+
 I then use a pipe `|` which sends the output of one command to the input of another to send this list of files to a command called `grep` which searches for text strings and tell it to search for `1033` (our desired file size).
-```
+
+```bash
 du -ab | grep 1033
 
 1033	./inhere/maybehere07/.file2
 ```
+
 This looks like it might be our file!
-```
+
+```bash
 cat ./inhere/maybehere07/.file2
 
 DXjZPULLxYr17uwoI01bNLQbtFemEgo7
@@ -141,14 +167,15 @@ DXjZPULLxYr17uwoI01bNLQbtFemEgo7
 
 <http://overthewire.org/wargames/bandit/bandit7.html>
 
-```
+```bash
 ssh bandit6@bandit.labs.overthewire.org
 ```
+
 Now we can use the `find` function to search the filesystem for files given certain tests that we want to give it.
 Here we have 3 specific properties of the file user, group and size.
 Using the tests `-group` and `-user` we can easily find the file we are looking for.
 
-```
+```bash
 find / -group bandit6 -user bandit7
 ```
 
@@ -156,7 +183,7 @@ This will produce some errors for directories that we don't have permission to r
 Assuming that the designers haven't put the file somewhere we can't access then it will have to be this one.
 We can perform `du` again to double check that the file has a size of 33 bytes.
 
-```
+```bash
 du -b /var/lib/dpkg/info/bandit7.password
 
 33
@@ -170,13 +197,14 @@ HKBPTKQnIay4Fw76bEy8PVxKEDQRKTzs
 
 <http://overthewire.org/wargames/bandit/bandit8.html>
 
-```
+```bash
 ssh bandit7@bandit.labs.overthewire.org
 ```
+
 I think this is where they meant to introduce `grep` and as a result of us already using it we can solve this similarly to before.
 We use `cat` to print all of the lines of this file and then pipe the output to `grep` and look for the word *millionth*.
 
-```
+```bash
 cat data.txt | grep millionth
 
 millionth	cvX2JJa4CFALtqS87jk27qwqGhBM9plV
@@ -186,7 +214,7 @@ millionth	cvX2JJa4CFALtqS87jk27qwqGhBM9plV
 
 <http://overthewire.org/wargames/bandit/bandit9.html>
 
-```
+```bash
 ssh bandit8@bandit.labs.overthewire.org
 ```
 
@@ -194,13 +222,13 @@ This one is probably not the best solution but it is the first one that I found 
 This can then be piped to `uniq` with the option `-c` which will count the number of repeated line.
 Then we just need to `sort` it again in reverse order using `-r` which will list the only line that occurs only once at the end of the sort.
 
-```
+```bash
 sort data.txt | uniq -c | sort -r
 ```
 
 The final line of this output shows the password as it is the only line with 1 occurence according to `uniq`.
 
-```
+```bash
 1 UsvVyFSfZZWbi6wgC7dAFyFuR6jQQUhR
 ```
 
@@ -208,13 +236,13 @@ The final line of this output shows the password as it is the only line with 1 o
 
 <http://overthewire.org/wargames/bandit/bandit10.html>
 
-```
+```bash
 ssh bandit9@bandit.labs.overthewire.org
 ```
 
 Using the `strings` function will output all of the human-readable strings of `data.txt` and then we just need to find those beginning with several `=` symbols using `grep`.
 
-```
+```bash
 strings data.txt | grep ===
 I========== the6
 ========== password
@@ -228,13 +256,14 @@ And only one of these looks like the correct password (from the previous formats
 
 <http://overthewire.org/wargames/bandit/bandit11.html>
 
-```
+```bash
 ssh bandit10@bandit.labs.overthewire.org
 ```
 
 This file is encoded into base 64 and as a result we need to use `base64` to decode this into ASCI text.
 Use the option `-d` to decode
-```
+
+```bash
 base64 -d data.txt
 
 The password is IFukwKGsFW8MOq3IRFqrxE1hxTNEbUPR
@@ -244,7 +273,7 @@ The password is IFukwKGsFW8MOq3IRFqrxE1hxTNEbUPR
 
 <http://overthewire.org/wargames/bandit/bandit12.html>
 
-```
+```bash
 ssh bandit11@bandit.labs.overthewire.org
 ```
 
@@ -253,14 +282,14 @@ I've never used `tr` before and I can see where it would be useful in certain "f
 This probably not the best solution but the basic syntax of `tr` here is one of `tr [set1] [set2] < data.txt`.
 This means replace all of the characters in set1 pairwise with the characters as defined in set2. I use this to produce the password
 
-```
+```bash
 tr [a-zA-Z] [n-za-mN-ZA-M] < data.txt
 ```
 
 Here `[set]` is a list of all lower case characters a-z and then all upper case characters A-Z.
 This is replaced with the same characters but translated 13 characters along so starting from n to z and then a to m.
 
-```
+```bash
 The password is 5Te8Y4drgCRfCx8ugdwuEX8KFC6k2EUu
 ```
 
@@ -270,7 +299,7 @@ I feel there must be a more elegant way of doing this...
 
 <http://overthewire.org/wargames/bandit/bandit13.html>
 
-```
+```bash
 ssh bandit12@bandit.labs.overthewire.org
 ```
 
@@ -278,7 +307,7 @@ This one took a short while!
 They definitely did compress it a few times.
 We start with `data.txt` and we want to move it and rename it to the `/tmp` folder that is suggested in the question.
 
-```
+```bash
 mkdir /tmp/gordon
 cp data.txt /tmp/gordon
 cd /tmp/gordon
@@ -286,7 +315,8 @@ mv data.txt data1.txt
 ```
 
 We now have a copy of the original data.txt in a nice temporary directory. We can now see what the file looks like by using `file data1.txt` and `cat data1.txt` which outputs
-```
+
+```bash
 data1.txt: ASCII text
 
 0000000: 1f8b 0808 34da 6554 0203 6461 7461 322e  ....4.eT..data2.
@@ -294,15 +324,16 @@ data1.txt: ASCII text
 0000020: 2653 5982 c194 8a00 0019 ffff dbfb adfb  &SY.............
 0000030: bbab b7d7 ffea ffcd fff7 bfbf 1feb eff9  ................
 ```
+
 This is a hexdump (as we were told in the question) and we will use the command `xxd` to reverse this with the option `-r`.
 
-```
+```bash
 xxd -r data1.txt > data2.txt
 ```
 
 We can now look at `data2.txt` using `file`
 
-```
+```bash
 file data2.txt
 
 dataz.txt: gzip compressed data, was "data2.bin", from Unix, last modified: Fri Nov 14 10:32:20 2014, max compression
@@ -311,7 +342,7 @@ dataz.txt: gzip compressed data, was "data2.bin", from Unix, last modified: Fri 
 So this shows us that we now have a file that is compressed using `gzip` and we'll need to uncompress this.
 There are several subsequent files that are also all compressed using different commands and for brevity I will only show the required commands (sometimes including renaming with `mv` for appropriate suffix) for this file in particular.
 
-``` bash
+```bash
 mv data2.txt data2.gz
 
 gzip -d data2.gz
@@ -345,7 +376,7 @@ Phew!
 
 <http://overthewire.org/wargames/bandit/bandit14.html>
 
-```
+```bash
 ssh bandit13@bandit.labs.overthewire.org
 
 exit
@@ -355,19 +386,21 @@ Here we are logged in as bandit13 and trying to read a file that is accessible o
 There is a file called `sshkey.private` which we can use to log in as bandit14 and then read the text password for the next problem.
 I will use `scp` to get the key file to my local computer.
 
-```
+```bash
 scp bandit13@bandit.labs.overthewire.org:/home/bandit13/sshkey.private ./
 ```
 
 This will copy the ssh key to my local folder and I can then use that to log in as bandit14. (If you get a warning about an unprotected key then use `chmod 600 sshkey.private`)
 
-```
+```bash
 ssh -i sshkey.private bandit14@bandit.labs.overthewire.org
 ```
+
 From here we can read the required password
-```
+
+```bash
 cat /etc/bandit_pass/bandit14
-eb
+
 4wcYUJFw0k0XLShlDzztnTBHiqxU3b3e
 ```
 
@@ -375,13 +408,13 @@ eb
 
 <http://overthewire.org/wargames/bandit/bandit15.html>
 
-```
+```bash
 ssh bandit14@bandit.labs.overthewire.org
 ```
 
 Here we can use `telnet` to connect to `localhost 30000` and then input the previous password.
 
-```
+```bash
 bandit14@melinda:~$ telnet localhost 30000
 Trying 127.0.0.1...
 Connected to localhost.
@@ -395,7 +428,7 @@ BfMYroe26WYalil77FoDi9qh59eK5xNr
 
 <http://overthewire.org/wargames/bandit/bandit16.html>
 
-```
+```bash
 ssh bandit15@bandit.labs.overthewire.org
 ```
 
@@ -403,7 +436,7 @@ This is similar to the last problem but we use an ssl handshake to authenticate 
 We can't connect to an ssl server without using this.
 We use the commands `openssl` and `s_client` to connect to `localhost:30001`
 
-```
+```bash
 openssl s_client -ign_eof -connect localhost:30001
 
 ...
@@ -427,7 +460,7 @@ Essentially when you are running `openssl` in an interactive mode (without using
 
 <http://overthewire.org/wargames/bandit/bandit17.html>
 
-```
+```bash
 ssh bandit16@bandit.labs.overthewire.org
 ```
 
@@ -435,7 +468,7 @@ In this level we can use a bunch of interesting stuff!
 I started by making a directory that I could write to and then using `nmap` to scan for open ports between `31000` and `32000` on the localhost.
 Then using `grep` (and an expression that means the *number 3 and then 4 other numerical digits*) we can write this to a text file containing the open ports in the range of interest.
 
-```
+```bash
 mkdir /tmp/gordon1
 nmap localhost -p 31000-32000 | grep -o '3[0-9]\{4\}' > /tmp/gordon1/test.txt
 
@@ -450,7 +483,7 @@ cat /tmp/gordon1/test.txt
 Now we use the `nc` utility to probe these ports with a very simple string of text `hello`.
 Here I'm just using a `for` loop to sequentially input the port of interest into our `nc` command.
 
-```
+```bash
 for line in $(cat /tmp/gordon1/test.txt);
 do
   echo hello | nc -v localhost $line;
@@ -460,14 +493,14 @@ done
 The output here shows that two of these ports won't accept non SSL communication so these are the two "servers" of interest.
 The relevant ports are `31518` and `31790` and we can use our commands from the previous question to connect to them with `openssl` and input the password.
 
-```
+```bash
 openssl s_client -ign_eof -connect localhost:31518
 openssl s_client -ign_eof -connect localhost:31790
 ```
 
 This works on port `31790` and gives us a private key as output.
 
-```
+```bash
 cluFn7wTiGryunymYOu4RcffSxQluehd
 Correct!
 
@@ -503,21 +536,21 @@ vBgsyi/sN3RqRBcGU40fOoZyfAMT8s1m/uYv52O6IgeuZ/ujbjY=
 These are the credentials that we want to connect to bandit17.
 Create a temporary file to store them in
 
-```
+```bash
 touch /tmp/gordon1/sshkey.private
 ```
 
 Paste in the details using `nano` or `vi` and restrict permissions on the file.
 Then connect to the machine as bandit17 using this key.
 
-```
+```bash
 chmod 600 /tmp/gordon1/sshkey.private
 ssh -i /tmp/gordon1/sshkey.private bandit17@localhost
 ```
 
 We can also get bandit17s plain text password from the same place as we did in an earlier question.
 
-```
+```bash
 cat /etc/bandit_pass/bandit17
 xLYVMN9WE5zQ5vHacb0sZEVqbrp7nBTn
 ```
@@ -526,14 +559,14 @@ xLYVMN9WE5zQ5vHacb0sZEVqbrp7nBTn
 
 <http://overthewire.org/wargames/bandit/bandit18.html>
 
-```
+```bash
 ssh bandit17@bandit.labs.overthewire.org
 ```
 
 Now we use the command `diff` to compare two files line by line.
 Here the only difference in the files will be the next password.
 
-```
+```bash
 diff passwords.old passwords.new
 42c42
 < BS8bqB1kqkinKJjuxL6k072Qq9NRwQpR
@@ -545,7 +578,7 @@ diff passwords.old passwords.new
 
 <http://overthewire.org/wargames/bandit/bandit19.html>
 
-```
+```bash
 ssh bandit18@bandit.labs.overthewire.org
 ```
 
@@ -553,7 +586,7 @@ When we `ssh` into this server we get booted out straight away by the `.bashrc` 
 This file is a configuration file that is executed on logging into the terminal emulator, in this case logging in via ssh.
 Instead of logging into the server interactively we can put a command at the end of the `ssh` which will execute that command rather than log into a remote shell.
 
-```
+```bash
 ssh bandit18@bandit.labs.overthewire.org cat readme
 
 IueksS7Ubh8G3DCwVzrTd8rAVOwq3M5x
@@ -563,7 +596,7 @@ IueksS7Ubh8G3DCwVzrTd8rAVOwq3M5x
 
 <http://overthewire.org/wargames/bandit/bandit20.html>
 
-```
+```bash
 ssh bandit19@bandit.labs.overthewire.org
 ```
 
@@ -571,7 +604,7 @@ This problem contains a binary executable that bandit19 has permission to use an
 The binary is called `bandit20-do` and can be executed using `./bandit20-do` to see what the syntax is.
 We can then use
 
-```
+```bash
 ./bandit20-do cat /etc/bandit_pass/bandit20
 
 GbKksEFF4yrVs6il55v6gwY5aVje5f0j
@@ -581,14 +614,14 @@ GbKksEFF4yrVs6il55v6gwY5aVje5f0j
 
 <http://overthewire.org/wargames/bandit/bandit21.html>
 
-```
+```bash
 ssh bandit20@bandit.labs.overthewire.org
 ```
 
 In this problem we want to open and listen to a local port using `nc` and the option `-l` to listen to this port.
 We also want to pass the password for this level to this port
 
-```
+```bash
 cat /etc/bandit_pass/bandit20 | nc -l localhost 8040
 ```
 
@@ -597,7 +630,7 @@ We now want to run the binary mentioned in the question that will connect to a p
 The binary `suconnect` will read this line of text and if it matches the password it will then send the next password back to the port that our `nc` process is listening to.
 This next command is to be run on a different ssh shell.
 
-```
+```bash
 ./suconnect 8040
 Read: GbKksEFF4yrVs6il55v6gwY5aVje5f0j
 Password matches, sending next password
@@ -605,7 +638,7 @@ Password matches, sending next password
 
 Then back in the original terminal the `nc` command will terminate hopefully with
 
-```
+```bash
 gE269g2h3mw3pwgrj0Ha9Uoqen1c9DGr
 ```
 
@@ -613,13 +646,13 @@ gE269g2h3mw3pwgrj0Ha9Uoqen1c9DGr
 
 <http://overthewire.org/wargames/bandit/bandit22.html>
 
-```
+```bash
 ssh bandit21@bandit.labs.overthewire.org
 ```
 
 As they suggest we can first move to `/etc/cron.d` and then look at what is there.
 
-```
+```bash
 cd /etc/cron.d
 ls
 behemoth4_cleanup  cronjob_bandit24_root  natas-stats       php5         sysstat
@@ -632,7 +665,7 @@ cronjob_bandit24   natas-session-toucher  natas27_cleanup   semtex5
 The interesting ones here are the ones called `cronjob_bandit*` and here we are looking for bandit22s password.
 Lets have a look at this file and then the subsequent script `cronjob_bandit22.sh`
 
-```
+```bash
 cat cronjob_bandit22
 * * * * * bandit22 /usr/bin/cronjob_bandit22.sh &> /dev/null
 
@@ -645,7 +678,7 @@ cat /etc/bandit_pass/bandit22 > /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
 
 Lets see if we can read the temporary file
 
-```
+```bash
 cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
 
 Yk7owGAcWjwMVRwrTesJEwB7WVOiILLI
@@ -655,13 +688,13 @@ Yk7owGAcWjwMVRwrTesJEwB7WVOiILLI
 
 <http://overthewire.org/wargames/bandit/bandit23.html>
 
-```
+```bash
 ssh bandit22@bandit.labs.overthewire.org
 ```
 
 As in the last question we can look at the `cron` task `/etc/cron.d/cronjob_bandit23` and then look at the resulting script file.
 
-```
+```bash
 cat /usr/bin/cronjob_bandit23.sh
 
 #!/bin/bash
@@ -672,7 +705,6 @@ mytarget=$(echo I am user $myname | md5sum | cut -d ' ' -f 1)
 echo "Copying passwordfile /etc/bandit_pass/$myname to /tmp/$mytarget"
 
 cat /etc/bandit_pass/$myname > /tmp/$mytarget
-
 ```
 
 This script file defines two variables `myname` which calls the function `whoami` which outputs the current user name.
@@ -681,14 +713,14 @@ After these variables are calculated the script then takes the password for that
 
 The solution is fairly easy after reading what the script does we first need to find out what the `$mytarget` variable would be with bandit23.
 
-```
+```bash
 echo I am user bandit23 | md5sum | cut -d ' ' -f 1
 8ca319486bfbbc3663ea0fbe81326349
 ```
 
 Now we can find the password by looking for this file in the `/tmp` directory
 
-```
+```bash
 cat /tmp/8ca319486bfbbc3663ea0fbe81326349
 
 jc1udXuA1tiHqjIsL8yaapX5XIAI6i0n
@@ -698,14 +730,14 @@ jc1udXuA1tiHqjIsL8yaapX5XIAI6i0n
 
 <http://overthewire.org/wargames/bandit/bandit24.html>
 
-```
+```bash
 ssh bandit23@bandit.labs.overthewire.org
 ```
 
 Here we want to write a shell script in a similar style to the one in the previous question.
 First lets see what the cronjob looks like
 
-```
+```bash
 cat /usr/bin/cronjob_bandit24.sh
 #!/bin/bash
 
@@ -728,7 +760,7 @@ This cron task will run any executable file in `/var/spool/bandit24` and then de
 Our job here is to write a script that will be run by bandit24 to write the password to a file accessible by bandit23.
 We should start by making a temporary directory to write our files to (and make it universally accessible and create our script.
 
-```
+```bash
 mkdir -p /tmp/gordon24
 chmod -R 777 /tmp/gordon24
 
@@ -738,7 +770,7 @@ vim passme.sh
 
 Script file
 
-```
+```bash
 #!/bin/bash
 
 myname=$(whoami)
@@ -748,14 +780,14 @@ cat /etc/bandit_pass/$myname > /tmp/gordon24/pass24
 
 We need to make this script executable and then we should copy it to the target directory of the cronjob and wait.
 
-```
+```bash
 chmod 777 passme.sh
 cp ./passme.sh /var/spool/bandit24/
 ```
 
 After less than 1 minute the `cron` task will run and hopefully write the password to our temporary file `pass24`.
 
-```
+```bash
 cat ./pass24
 
 UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ
@@ -765,6 +797,31 @@ UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ
 
 <http://overthewire.org/wargames/bandit/bandit25.html>
 
-```
+```bash
 ssh bandit24@bandit.labs.overthewire.org
 ```
+
+Here we are asked to brute force the local port `30002` with a 4-digit pin code.
+We will again use a `do` loop to iterate over the 10000 possible numbers.
+Lets set up our loop by first outputting our password with a space and then a 4 digit number.
+
+```bash
+pass=$(cat /etc/bandit_pass/bandit24)
+echo $pass 1024
+UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ 1024
+```
+
+So this is the format that we want to be sending to the server listening at port `30002` and we can now write the loop.
+
+```bash
+for i in {0000..9999}
+do
+  echo $pass $i | nc -v localhost 30002 >> ./brute; echo $i >> ./brute
+done
+```
+
+**This will take some time so go and make yourself a cup of tea!**
+
+This will iterate over the numbers from 0000 to 9999 and send the password for bandit24 followed by the number `i` and then piped to `nc` and sent to the server.
+We then write the output to a local file called `brute` and then also `echo $i` the current iterative number to the same file `brute`.
+I've written the output to a file so that I can search it when we are done because otherwise there will be too much output to look through.
