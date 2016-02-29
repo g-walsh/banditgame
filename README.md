@@ -896,7 +896,7 @@ exit 0
 So this runs a shell script that uses `more` to display `text.txt` and then exits. The question asks that we break out of this which means playing with `more` somehow.
 `more` uses the current screen size when it displays text and will generate page breaks based on that so if we make our terminal emulator window very small it will create an interrupt before it finishes showing `~text.txt` that will be a start.
 
-```bash
+```
 _                     _ _ _   __
 _   __  
 | |                   | (_) | |__
@@ -907,7 +907,7 @@ We are now in the `more` command that is displaying the cool bandit26 ascii intr
 From here we could edit the `text.txt` file (though not override as we don't have permission) and do anything else we might fancy in `vi`.
 `vi` is a text editor and as a result we can open files as bandit26 so it is quite trivial to open the password file that we are after.
 
-```bash
+```
 :edit /etc/bandit_pass/bandit26
 
 5czgV9L3Xx8JPOyRbXh6lQbmIOWvPT6Z
