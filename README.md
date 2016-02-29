@@ -316,7 +316,7 @@ mv data.txt data1.txt
 
 We now have a copy of the original data.txt in a nice temporary directory. We can now see what the file looks like by using `file data1.txt` and `cat data1.txt` which outputs
 
-```bash
+```
 data1.txt: ASCII text
 
 0000000: 1f8b 0808 34da 6554 0203 6461 7461 322e  ....4.eT..data2.
@@ -414,7 +414,7 @@ ssh bandit14@bandit.labs.overthewire.org
 
 Here we can use `telnet` to connect to `localhost 30000` and then input the previous password.
 
-```bash
+```
 bandit14@melinda:~$ telnet localhost 30000
 Trying 127.0.0.1...
 Connected to localhost.
@@ -438,13 +438,14 @@ We use the commands `openssl` and `s_client` to connect to `localhost:30001`
 
 ```bash
 openssl s_client -ign_eof -connect localhost:30001
+```
 
+```
 ...
 BfMYroe26WYalil77FoDi9qh59eK5xNr
 Correct!
 cluFn7wTiGryunymYOu4RcffSxQluehd
 ...
-
 ```
 
 The question suggests that we use the option `-ign_eof` with s_client, to find out why below I quote from the man page of `openssl`
@@ -500,7 +501,7 @@ openssl s_client -ign_eof -connect localhost:31790
 
 This works on port `31790` and gives us a private key as output.
 
-```bash
+```
 cluFn7wTiGryunymYOu4RcffSxQluehd
 Correct!
 
@@ -833,7 +834,7 @@ sort ./brute | uniq -c
 
 This will output lots of lines but the last few lines are interesting
 
-```bash
+```
     1 9995
     1 9996
     1 9997
