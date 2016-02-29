@@ -825,3 +825,38 @@ done
 This will iterate over the numbers from 0000 to 9999 and send the password for bandit24 followed by the number `i` and then piped to `nc` and sent to the server.
 We then write the output to a local file called `brute` and then also `echo $i` the current iterative number to the same file `brute`.
 I've written the output to a file so that I can search it when we are done because otherwise there will be too much output to look through.
+We can use the functions `sort` and `uniq` that we learned earlier to find the interesting lines in this file.
+
+```bash
+sort ./brute | uniq -c
+```
+
+This will output lots of lines but the last few lines are interesting
+
+```bash
+    1 9995
+    1 9996
+    1 9997
+    1 9998
+    1 9999
+    1 Correct!
+10011 Exiting.
+10014 I am the pincode checker for user bandit25. Please enter the password for user bandit24 and the secret pincode on a single line, separated by a space.
+    1 The password of user bandit25 is uNG9O58gUE7snukf3bvZ0rxhtnjzSGzG
+10010 Wrong! Please enter the correct pincode. Try again.
+```
+
+Here we can see the list of unique `$i` lines finishing and the many repeated "Wrong!" lines.
+Importantly we can see the one unique line that matters
+
+```bash
+1 The password of user bandit25 is uNG9O58gUE7snukf3bvZ0rxhtnjzSGzG
+```
+
+### Level 25 -> 26
+
+<http://overthewire.org/wargames/bandit/bandit26.html>
+
+```bash
+ssh bandit25@bandit.labs.overthewire.org
+```
