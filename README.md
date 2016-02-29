@@ -860,3 +860,64 @@ Importantly we can see the one unique line that matters
 ```bash
 ssh bandit25@bandit.labs.overthewire.org
 ```
+
+So this is the first one that makes you feel like a hacker and I'll admit to looking up a couple of hints to this solution as I didn't know how to do a couple of these steps.
+First we log in as bandit25 and use `ll` to show that there is a file `bandit26.sshkey`.
+Let's try and log in to `localhost` using this key.
+
+```bash
+ssh -i bandit26.sshkey bandit26@localhost
+```
+
+This logs is as bandit26 but immediately exits so there is something running on connection that immediately exits.
+The bit that I had to look up was looking up the file `/etc/passwd` which is an interesting file!
+This file shows us all of the users and groups that they are attached to with their home directories and default shells listed.
+Let's find bandit26
+
+```bash
+cat /etc/passwd | grep bandit26
+bandit26:x:11026:11026:bandit level 26:/home/bandit26:/usr/bin/showtext
+```
+
+So instead of running a regular shell (for example `/bin/bash`) bandit26 runs a custom file called `/usr/bin/showtext` so lets see if we can look at this.
+
+```bash
+cat /usr/bin/showtext
+```
+
+```bash
+#!/bin/sh
+
+more ~/text.txt
+exit 0
+```
+
+So this runs a shell script that uses `more` to display `text.txt` and then exits. The question asks that we break out of this which means playing with `more` somehow.
+`more` uses the current screen size when it displays text and will generate page breaks based on that so if we make our terminal emulator window very small it will create an interrupt before it finishes showing `~text.txt` that will be a start.
+
+```bash
+_                     _ _ _   __
+_   __  
+| |                   | (_) | |__
+--More--(29%)
+```
+
+We are now in the `more` command that is displaying the cool bandit26 ascii intro page and we can now resize our terminal emulator and then press `v` to enter the interactive `vi` session.
+From here we could edit the `text.txt` file (though not override as we don't have permission) and do anything else we might fancy in `vi`.
+`vi` is a text editor and as a result we can open files as bandit26 so it is quite trivial to open the password file that we are after.
+
+```bash
+:edit /etc/bandit_pass/bandit26
+
+5czgV9L3Xx8JPOyRbXh6lQbmIOWvPT6Z
+```
+
+### Level 26 -> 27
+
+<http://overthewire.org/wargames/bandit/bandit27.html>
+
+Doesn't exist and probably won't so I guess that means I've completed it! Woo.
+
+Comments and suggestions are always welcome, also feel free to commit edits via github.
+
+**Gordon Walsh - Monday 29th February 2016**
